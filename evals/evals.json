@@ -1,0 +1,23 @@
+{
+  "skill_name": "llm-token-economy",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm adding a 'report builder' specialist to our LangGraph agent system. The supervisor delegates to it; it writes a full markdown report (usually 3-6 pages) and calls save_report(markdown, title) then send_report(report_id). Model is claude-opus-5-5. Review the design for token cost before I build it.",
+      "expected_output": "Flags the bulk artefact as a tool argument (R3): propose spec or handle based saving, max_tokens as backstop with stop_reason handling, Sonnet/Haiku A/B for the writer, output budget, caching via the shared factory, caps on delegations. References the dashboard incident as evidence.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Our Anthropic bill tripled this month. We have a Postgres table llm_usage with per-call tokens. Where do I start? I don't want to drop quality.",
+      "expected_output": "Runs or hands over the five measurement queries in order, explains the healthy-loop signature and the truncation check, ranks causes by dollars, applies free wins before tradeoffs, and insists on A/B for any model or effort change.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Yesterday our nightly summariser job burned $40 because the OpenAI key was rate limited and it retried the same batch all night. Log this in the token skill.",
+      "expected_output": "Appends an entry to references/learnings.md in the template format with evidence, root cause and the rule (attempt caps, backoff, circuit breaker), cites it under R7 in SKILL.md, updates the Last updated line and count, shows the diff.",
+      "files": []
+    }
+  ]
+}

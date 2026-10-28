@@ -1,0 +1,12 @@
+# skill-creator eval workspaces and run outputs
+*-workspace/
+evals/**/outputs/
+evals/**/grading.json
+evals/**/timing.json
+feedback.json
+
+# OS and editor noise
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc
