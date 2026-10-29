@@ -165,3 +165,18 @@ Source for L-001 to L-016: a production agent product (LangGraph supervisor with
 - Evidence: 6 of 6 quick lookups blind-equal to Opus 5.5 (90% confidence); heavy questions worse (80%). Reflection, the memory model and document extraction moved to Haiku 5.5 at parity; supervisor, Data Agent, research and graph extraction stayed. Routing quick lookups to Haiku (about 25× cheaper) is backlog 999.1.
 - Rule: R6 (decide per role by A/B; route by task class, not globally).
 - Status: verified 2026-10-26; routing proposed
+
+## L-017  Measured after the fixes: per-call cost down 41% at equal prompt size; the graph extraction pipeline becomes the top lever
+- Date: 2026-10-28
+- System: copy B (M2 build), supervisor and specialists on Claude Opus 5.5; graph extraction on gpt-5.5.
+- Symptom: this checks what the free wins delivered on the deployed build. The fixes were the conversation cache on every loop (R2), tool-result caps (R4), dashboard caps and handles (R3, R5), cost-weighted budgets and triage backoff (R5, R7), and the community rebuild turned off (R7).
+- Evidence (ledger, copy B; before = 10-27, 277 supervisor calls; after = 10-28 post-deploy, 38 calls):
+  - Supervisor Opus cost per call fell from $0.0474 to $0.0281 (−41%). The average prompt size was the same (25.1k vs 25.4k tokens), and the uncached share fell from 31.7% to 0.0%.
+  - The same question, asked before and after: run 89 cost $0.486 and run 108 cost $0.219 (−55%), including the run's graph extraction. Run 108 made 7 calls against 4 and read 4× more data rows. Its cache write fell from 64.6k to 20.6k tokens; most of the difference is `get_model` returning about 11k characters instead of 62k.
+  - Nightly exploration: $0.449 for 13 calls with 307 uncached tokens, about $0.035 per call. The uncached copy A runs cost about $0.092 per call ($4.04 over 44 calls). Different data, so this is indicative.
+  - Speed: the average supervisor call took 5.8 s before and 5.0 s after. Milliseconds per output token fell from 18.9 to 14.0 (−26%). The median call was slower (3.0 s → 4.9 s) because these calls wrote more output. User-visible time for the same question was about 20 s both times, with 7 calls instead of 4.
+  - After the fixes, gpt-5.5 graph extraction was about $0.095 per chat run (72 calls, $0.86 over 9 runs), roughly a quarter of the run's cost.
+- Root cause: (positive result) the per-call cost is now set by prompt size and output alone, not by re-sending the conversation.
+- Fix: none needed. Next levers by size: the extraction pipeline (Sonnet 5.5 or Flex behind an A/B, batch the backfill), then the output and thinking of dispatch steps (effort per route).
+- Rule: R1 (compare per call at equal prompt size, because per-run averages mix different task types: dashboard revision runs made the post-fix run average look flat). Once the main loop is cheap, the background pipeline becomes the top line item (R6, R7).
+- Status: verified 2026-10-28 (small after-sample: 9 user runs, 38 supervisor calls).

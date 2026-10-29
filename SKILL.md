@@ -5,7 +5,7 @@ description: Token-cost discipline for building and operating LLM agent systems 
 
 # LLM token economy
 
-Last updated: 2026-10-28. Learnings log: `references/learnings.md` (16 entries).
+Last updated: 2026-10-28. Learnings log: `references/learnings.md` (17 entries).
 
 ## Why this exists
 
