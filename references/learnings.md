@@ -180,3 +180,16 @@ Source for L-001 to L-016: a production agent product (LangGraph supervisor with
 - Fix: none needed. Next levers by size: the extraction pipeline (Sonnet 5.5 or Flex behind an A/B, batch the backfill), then the output and thinking of dispatch steps (effort per route).
 - Rule: R1 (compare per call at equal prompt size, because per-run averages mix different task types: dashboard revision runs made the post-fix run average look flat). Once the main loop is cheap, the background pipeline becomes the top line item (R6, R7).
 - Status: verified 2026-10-28 (small after-sample: 9 user runs, 38 supervisor calls).
+
+## L-018  Sonnet 5.5 as the supervisor: half the cost, wrong on the heavy questions
+- Date: 2026-10-29
+- System: copy A (fleet client, direct reads on the live business DB), LangGraph supervisor with specialists; Data Agent already on Sonnet 5.5.
+- Symptom: the owner asked whether the frontier model is needed for the supervisor ("do we really need Opus?").
+- Evidence: 8 real questions from the client's own chat history were sent at the same moment to two throwaway stacks restored from one snapshot. The only difference was the supervisor model, both at effort medium. A fresh reviewer judged the answers blind (X/Y shuffled per question) and checked the numbers with 14 read-only queries.
+  - Opus won 6 and tied 2; Sonnet won none. Sonnet cost $1.79 against $3.56 (-50%) and took 461 s against 714 s (-35%).
+  - Sonnet's missed-fuel-drop report claimed about 10,000 L missing. Most of it was a test asset and sensor dropouts to zero; the real figure was about 1,900 L. Its quick "is any machine consuming now" answer opened with a "yes" its own data contradicted, and its fleet report was a raw dump with a wrong row count.
+- Root cause: on multi-step reconciliation the cheaper supervisor skipped the plausibility checks that keep junk rows out of a total. Its cost saving came from doing less work: fewer tool calls on the heavy questions, and on the dashboard request a question back instead of a build.
+- Fix: none; Opus stays as the supervisor. The saving has to come from routing by task class, from the background pipeline (L-017) and from effort, not from a global downgrade.
+- Rule: R6 (decide per role by A/B on the client's real questions, verify the numbers, not only the prose). A cheaper run that is wrong is not cheaper: judge cost per correct answer.
+- Status: verified 2026-10-29 (n = 1 run per question; the heavy-question gap was checked with queries). Sonnet at effort high is untested.
+
